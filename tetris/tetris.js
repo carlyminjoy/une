@@ -32,7 +32,7 @@ Position.prototype.moveLeft = function () {
 };
 
 Position.prototype.moveRight = function () {
-  return new Position(this.row, this.col +1);
+    return new Position(this.row, this.col +1);
 };
 
 Position.prototype.moveUp = function () {
@@ -40,7 +40,7 @@ Position.prototype.moveUp = function () {
 };
 
 Position.prototype.moveDown = function () {
-  return new Position(this.row + 1, this.col);
+    return new Position(this.row + 1, this.col);
 };
 
 /**
@@ -73,18 +73,18 @@ var nullGrid = function (rows, cols) {
 /** Clones, i.e. performs a deep copy on, a grid. */
 var gridClone = function (grid) {
     var cloned = [];
-    var row, col;
+    var row;
 
     for (var i = 0; i < grid.length; i++) {
-      row = [];
-      for (var j = 0; j < grid[i].length; j++) {
-        row.push(grid[i][j]);
-      }
-      cloned.push(row);
+        row = [];
+        for (var j = 0; j < grid[i].length; j++) {
+            row.push(grid[i][j]);
+        }
+        cloned.push(row);
     }
 
     return cloned;
-  };
+};
 
 /**
  * Returns an array of the Positions in a grid corresponding to the
@@ -101,11 +101,11 @@ var gridClone = function (grid) {
 var truthyCoords = function (grid) {
     var row, col, output = [];
     for (row = 0; row < grid.length; row++) {
-      for (col = 0; col < grid[row].length; col++) {
-        if (grid[row][col]) {
-          output.push(new Position(row, col));
+        for (col = 0; col < grid[row].length; col++) {
+            if (grid[row][col]) {
+                output.push(new Position(row, col));
+            }
         }
-      }
     }
     return output;
 };
@@ -123,13 +123,13 @@ var truthyCoords = function (grid) {
 var rotateCW = function (grid) {
     var rotated = [];
     for (var r in grid) {
-      for (var c in grid[r]) {
-        if (rotated[c]) {
-          rotated[c].unshift(grid[r][c]);
-        } else {
-          rotated.push([grid[r][c]]);
+        for (var c in grid[r]) {
+            if (rotated[c]) {
+              rotated[c].unshift(grid[r][c]);
+            } else {
+              rotated.push([grid[r][c]]);
+            }
         }
-      }
     }
     return rotated;
 };
@@ -144,13 +144,12 @@ var rotateCW = function (grid) {
  *                             [0, 0, 1, 0]]) = 2
  */
 var leftMostTruthyCol = function (grid) {
-    // TODO
     var i, smallestCol = null;
     var coords = truthyCoords(grid);
     for (i = 0; i < coords.length; i++) {
-      if (smallestCol === null || coords[i].col < smallestCol) {
-        smallestCol = coords[i].col;
-      }
+        if (smallestCol === null || coords[i].col < smallestCol) {
+            smallestCol = coords[i].col;
+        }
     }
     return smallestCol;
 };
@@ -164,13 +163,12 @@ var leftMostTruthyCol = function (grid) {
  *                              [1, 1, 0]]) = 1
  */
 var rightMostTruthyCol = function (grid) {
-    // TODO
     var i, largestCol = null;
     var coords = truthyCoords(grid);
     for (i = 0; i < coords.length; i++) {
-      if (largestCol === null || coords[i].col > largestCol) {
-        largestCol = coords[i].col;
-      }
+        if (largestCol === null || coords[i].col > largestCol) {
+            largestCol = coords[i].col;
+        }
     }
     return largestCol;
 };
@@ -184,13 +182,12 @@ var rightMostTruthyCol = function (grid) {
  *                               [0, 0, 0]] = 1
  */
 var bottomMostTruthyRow = function (grid) {
-    // TODO
     var i, largestRow = null;
     var coords = truthyCoords(grid);
     for (i = 0; i < coords.length; i++) {
-      if (largestRow === null || coords[i].row > largestRow) {
-        largestRow = coords[i].row;
-      }
+        if (largestRow === null || coords[i].row > largestRow) {
+            largestRow = coords[i].row;
+        }
     }
     return largestRow;
 };
@@ -204,14 +201,14 @@ var bottomMostTruthyRow = function (grid) {
  *                            [0, 1, 0]] = 1
  */
 var topMostTruthyRow = function (grid) {
-  var i, smallestRow = null;
-  var coords = truthyCoords(grid);
-  for (i = 0; i < coords.length; i++) {
-    if (smallestRow === null || coords[i].row < smallestRow) {
-      smallestRow = coords[i].row;
+    var i, smallestRow = null;
+    var coords = truthyCoords(grid);
+    for (i = 0; i < coords.length; i++) {
+        if (smallestRow === null || coords[i].row < smallestRow) {
+            smallestRow = coords[i].row;
+        }
     }
-  }
-  return smallestRow;
+    return smallestRow;
 };
 
 /**
@@ -323,9 +320,22 @@ ActiveTetromino.prototype.rotateCW = function () {
  * Note that the active tetromino starts with a negative top row, so
  * that it is initial totally hidden from the player.
  */
-ActiveTetromino.prototype.isFullyVisible = function () {
-    // TODO
-    return this.topLeft().row >= 0;
+
+ActiveTetromino.prototype.isFullyVisible = function() {
+    // get all truthy positions of tetromino & top left position
+    var tet       = this.tetromino.shape;
+    var gridPos   = this.topLeft;
+    var topRow    = gridPos.row + topMostTruthyRow(tet);
+    var bottomRow = gridPos.row + bottomMostTruthyRow(tet);
+    var leftCol   = gridPos.col + leftMostTruthyCol(tet);
+    var rightCol  = gridPos.col + rightMostTruthyCol(tet);
+
+    if (  topRow    > 19 ||
+          bottomRow < 0  ||
+          leftCol   < 0  ||
+          rightCol  > 9  ) { return false; }
+
+    return true;
 };
 
 /**
@@ -411,23 +421,20 @@ Model.prototype.rotateCW = function () {
  * non-null values in grid, or whether the active tetromino has cells
  * that appear outside of the grid.
  */
-Model.prototype.hasCollisions = function () {
-    // TODO
-    var collisions = false;
-    var tet = this.shape;
-    var gridPos = this.topLeft;
+Model.prototype.hasCollisions = function (tet) {
+    var tetCoords = truthyCoords(tet.tetromino.shape);
+    var gridPos   = tet.topLeft;
 
-    for (var r in tet) {
-      for (var c in tet[r]) {
-        if (tet[r + gridPos.row][c + gridPos.col] &&
-            !model.grid[r][c] ||
-            (gridPos.row < 0 || gridPos.col < 0)) {
-          collisions = true;
-        }
-      }
+    for (var pos in tetCoords) {
+        var cell = gridPos.add(tetCoords[pos]);
+        if (
+            cell.row > 19 ||
+            cell.col < 0  ||
+            cell.col > 9  ||
+            (cell.row >= 0 && this.grid[cell.row][cell.col])
+        ) { return true; }
     }
-
-    return collisions;
+    return false;
 };
 
 /**
@@ -436,7 +443,19 @@ Model.prototype.hasCollisions = function () {
  * If this.active === null then does nothing.
  */
 Model.prototype.activeToGrid = function () {
-    // TODO
+    if (this.active !== null) {
+        var tetCoords = truthyCoords(this.active.tetromino.shape);
+        var gridPos = this.active.topLeft;
+        var color = this.active.tetromino.colour;
+
+        for (var pos in tetCoords) {
+            var cell = gridPos.add(tetCoords[pos]);
+            if (cell.row >= 0) {
+                this.grid[cell.row][cell.col] = color;
+            }
+        }
+        this.active = null;
+    }
 };
 
 /**
@@ -445,8 +464,23 @@ Model.prototype.activeToGrid = function () {
  * Complete lines are rows which contain no nulls. Rows above the
  * removed rows are moved down.
  */
+
 Model.prototype.clearLines = function () {
-    // TODO
+    for (var r in this.grid) {
+        var full = true;
+        for (var c in this.grid[r]) {
+            if (!this.grid[r][c]) { full = false; }
+        }
+        if (full) {
+            for (var e in this.grid[r]) {
+                this.grid[r][e] = null;
+            }
+            while (r > 0) {
+                this.grid[r] = this.grid[r-1];
+                r--;
+            }
+        }
+    }
 };
 
 /** An array of all the posible active tetrominos we can generate. */
@@ -454,7 +488,7 @@ var tetrominoChoices = (function () {
     var i, j, tetrominos, rotatedTetrominos, tetromino, top, minLeft, maxLeft, left, choices;
     tetrominos = [I, J, L, O, S, T, Z];
 
-    // Collect not just the origianal tetrominos, but rotated copies of them.
+    // Collect not just the original tetrominos, but rotated copies of them.
     rotatedTetrominos = [];
     for (i = 0; i < tetrominos.length; i++) {
         tetromino = tetrominos[i];
@@ -513,35 +547,53 @@ Model.prototype.update = function (action) {
         // cannot be moved down, then move the active to the grid, and
         // clear lines.
         if (this.active !== null) {
-          next = this.moveDown();
-          if (!next.hasCollisions()){
-            this.active = this.active.moveDown();
-          } else if (this.isFullyVisible()) {
-            this.activeToGrid();
-            clearLines();
-          } else {
-            //TODO implement game over
-          }
+            next = this.active.moveDown();
+            if (!this.hasCollisions(next)) {
+                this.active = next;
+            } else if (this.active.isFullyVisible()) {
+                this.activeToGrid();
+                this.clearLines();
+            } else {
+                this.gameOver = true;
+            }
         }
     } else if (action === Action.Left) {
         if (this.active !== null) {
-          next = this.moveLeft();
-          if (!next.hasCollisions){
-            this.active = this.active.moveLeft();
-          }
+            next = this.active.moveLeft();
+            if (!this.hasCollisions(next)){
+                this.active = next;
+            }
         }
     } else if (action === Action.Right) {
         if (this.active !== null) {
-          next = this.moveRight();
-          if (!next.hasCollisions){
-            this.active = this.active.moveRight();
-          }
+            next = this.active.moveRight();
+            if (!this.hasCollisions(next)){
+                this.active = next;
+            }
         }
     } else if (action === Action.Rotate) {
         // TODO If this.active is not null attempt to rotate it
         // clockwise. If this fails, then try wall kicks, i.e.
         // try to rotate it AND move it one left, also try to rotate it
         // AND move it one right.
+        if (this.active !== null) {
+            next = this.active.rotateCW();
+            if(!this.hasCollisions(next)){
+                this.active = next;
+            } else {
+                next = this.active.moveLeft();
+                next = next.rotateCW();
+                if(!this.hasCollisions(next)){
+                    this.active = next;
+                } else {
+                    next = this.active.moveRight();
+                    next = next.rotateCW();
+                    if(!this.hasCollisions(next)){
+                        this.active = next;
+                    }
+                }
+            }
+        }
     }
 };
 
