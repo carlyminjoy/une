@@ -125,9 +125,9 @@ var rotateCW = function (grid) {
     for (var r in grid) {
         for (var c in grid[r]) {
             if (rotated[c]) {
-              rotated[c].unshift(grid[r][c]);
+                rotated[c].unshift(grid[r][c]);
             } else {
-              rotated.push([grid[r][c]]);
+                rotated.push([grid[r][c]]);
             }
         }
     }
