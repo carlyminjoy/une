@@ -75,6 +75,8 @@ var gridClone = function (grid) {
     var cloned = [];
     var row;
 
+    // Iterate through each cell in grid and
+    // create and push a copy to cloned grid
     for (var i = 0; i < grid.length; i++) {
         row = [];
         for (var j = 0; j < grid[i].length; j++) {
@@ -100,6 +102,9 @@ var gridClone = function (grid) {
  */
 var truthyCoords = function (grid) {
     var row, col, output = [];
+
+    // Iterate through each cell in grid and
+    // create and push a new position to output
     for (row = 0; row < grid.length; row++) {
         for (col = 0; col < grid[row].length; col++) {
             if (grid[row][col]) {
@@ -107,6 +112,7 @@ var truthyCoords = function (grid) {
             }
         }
     }
+    // Return all truthy positions
     return output;
 };
 
@@ -122,10 +128,17 @@ var truthyCoords = function (grid) {
  */
 var rotateCW = function (grid) {
     var rotated = [];
+
+    // For each cell in grid
     for (var r in grid) {
         for (var c in grid[r]) {
+            // c acts as required col in rotated grid.
+            // If row (c) has already been created,
+            // add cell to beginning of the row
             if (rotated[c]) {
                 rotated[c].unshift(grid[r][c]);
+            // If row(c) hasn't been created,
+            // add row and col to the end of grid
             } else {
                 rotated.push([grid[r][c]]);
             }
@@ -146,6 +159,10 @@ var rotateCW = function (grid) {
 var leftMostTruthyCol = function (grid) {
     var i, smallestCol = null;
     var coords = truthyCoords(grid);
+
+    // iterates through truthy positions in grid
+    // and assigns the value of the smallest column
+    // to smallestCol
     for (i = 0; i < coords.length; i++) {
         if (smallestCol === null || coords[i].col < smallestCol) {
             smallestCol = coords[i].col;
@@ -325,16 +342,20 @@ ActiveTetromino.prototype.isFullyVisible = function() {
     // get all truthy positions of tetromino & top left position
     var tet       = this.tetromino.shape;
     var gridPos   = this.topLeft;
+
+    // Find positions of all truthy sides of the tetromino shape
     var topRow    = gridPos.row + topMostTruthyRow(tet);
     var bottomRow = gridPos.row + bottomMostTruthyRow(tet);
     var leftCol   = gridPos.col + leftMostTruthyCol(tet);
     var rightCol  = gridPos.col + rightMostTruthyCol(tet);
 
+    // Returns false if any positions are outside the grid
     if (  topRow    > 19 ||
           bottomRow < 0  ||
           leftCol   < 0  ||
           rightCol  > 9  ) { return false; }
 
+    // Returns true if all positions are within the grid
     return true;
 };
 
@@ -425,6 +446,9 @@ Model.prototype.hasCollisions = function (tet) {
     var tetCoords = truthyCoords(tet.tetromino.shape);
     var gridPos   = tet.topLeft;
 
+    // Iterates through every cell in tetromino
+    // and makes sure it doesn't appear outside the gridPos
+    // and doesn't overlap with existing non-null cells
     for (var pos in tetCoords) {
         var cell = gridPos.add(tetCoords[pos]);
         if (
@@ -448,8 +472,12 @@ Model.prototype.activeToGrid = function () {
         var gridPos = this.active.topLeft;
         var color = this.active.tetromino.colour;
 
+        // iterates through all truthy positions of active tetromino
+        // and changes color of active cell in background grid
         for (var pos in tetCoords) {
             var cell = gridPos.add(tetCoords[pos]);
+            // makes sure the cell has come into vision
+            // from the top of the screen
             if (cell.row >= 0) {
                 this.grid[cell.row][cell.col] = color;
             }
@@ -466,15 +494,21 @@ Model.prototype.activeToGrid = function () {
  */
 
 Model.prototype.clearLines = function () {
+    // iterates through each cell in grid
+    // and if every cell in the row is not null,
+    // changes the variable full to true
     for (var r in this.grid) {
         var full = true;
         for (var c in this.grid[r]) {
             if (!this.grid[r][c]) { full = false; }
         }
+        // if the row is full, iterates through each cell
+        // in that row and changes it to null
         if (full) {
             for (var e in this.grid[r]) {
                 this.grid[r][e] = null;
             }
+            // Moves all the upper rows in the grid down
             while (r > 0) {
                 this.grid[r] = this.grid[r-1];
                 r--;
