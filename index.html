@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>COSC360 A1</title>
+</head>
+
+<body>
+<div class="container">
+    <h1>Assignment 1</h1>
+    <p>
+        You should take a look at the README.md file to see what you need to do in assignment 1.
+    </p>
+    <div class="btn-group" role="group" aria-label="Task buttons">
+        <button id="button0" type="button" class="btn btn-secondary">0</button>
+        <button id="button1" type="button" class="btn btn-secondary">1</button>
+        <button id="button2" type="button" class="btn btn-secondary">2</button>
+        <button id="button3" type="button" class="btn btn-secondary">3</button>
+        <button id="button4" type="button" class="btn btn-secondary">4</button>
+        <button id="button5" type="button" class="btn btn-secondary">5</button>
+        <button id="button6" type="button" class="btn btn-secondary">6</button>
+        <button id="button7" type="button" class="btn btn-secondary">7</button>
+        <button id="button8" type="button" class="btn btn-secondary">8</button>
+        <button id="button9" type="button" class="btn btn-secondary">9</button>
+    </div>
+
+    <hr/>
+
+    <div id="renderhere">
+        The components for each task should render here when the relevant button is pressed.
+    </div>
+</div>
+
+
+<script src="provided.js"></script>
+<script>
+  grocery_shop = {
+    aisles: [
+      { 
+        name: "fruit and veg",
+        items: [
+          { name: "apples", cost: "4.50", per: "kg" },
+          { name: "bananas", cost: "3.50", per: "kg" },
+          { name: "mandarins", cost: "2.50", per: "kg" }
+        ]
+      },
+      { 
+        name: "bakery",
+        items: [
+          { name: "sandwich loaf", cost: "2.50", per: "ea" },
+          { name: "tiger loaf", cost: "3.50", per: "ea" },
+          { name: "baguette", cost: "2.50", per: "ea" },
+          { name: "cob", cost: "1.50", per: "ea"}
+        ]
+      },
+      { 
+        name: "biscuits",
+        items: [
+          { name: "jaffa cakes", cost: "2.50", per: "200g" },
+          { name: "fig rolls", cost: "3.50", per: "150g" },
+          { name: "jam drops", cost: "2.50", per: "300g" }
+        ]
+      }
+    ]
+  }
+</script>
+
+<script src="studentcode.js"></script>
+
+</body>
+</html>
