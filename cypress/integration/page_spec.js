@@ -36,166 +36,166 @@ const mastermindInitialSequence = (() => {
   return finalSequence;
 })();
 
-describe('Button 8', function () {
-  beforeEach(function () {
-      cy.get('#button8').click();
-  });
-  it('should display the initial game state', function () {
-      cy.get('#renderhere select');
-      cy.get('#renderhere select').first().should('not.be.disabled');
-      cy.get('#renderhere select').should('have.length', 4);
-      mastermindColours.forEach((colour) => {
-          cy.get('#renderhere option').contains(colour).should('have.length', 4);
-      });
-      cy.get('#renderhere select option:nth-child(6)').should('have.length', 4);
-      cy.get('#renderhere button').contains('Submit');
-  });
-  it('should allow me to submit something and get a read-out', function () {
-      cy.get('#renderhere select').first().select('Xanadu');
-      cy.get('#renderhere select').eq(1).select('Arsenic');
-      cy.get('#renderhere select').eq(3).select('Arsenic');
-      cy.get('#renderhere select').eq(2).select('Niagara');
-      cy.get('#renderhere button').click();
-      cy.log('One play should get me one read out, and no more.');
-      cy.get('#renderhere ol > li:nth-child(2)').should('not.exist');
-      cy.get('#renderhere ol > li').contains(/X-A-N-A/);
-      cy.get('#renderhere ol > li').contains(/[EWB]-[EWB]-[EWB]-[EWB]/);
-      cy.get('#renderhere select').eq(0).find('option').contains('Xanadu').should('be.selected');
-      cy.get('#renderhere select').eq(1).find('option').contains('Arsenic').should('be.selected');
-      cy.get('#renderhere select').eq(2).find('option').contains('Niagara').should('be.selected');
-      cy.get('#renderhere select').eq(3).find('option').contains('Arsenic').should('be.selected');
-  });
-  it('should allow me to lose one game in ' + numGamesToPlay, function () {
-      const testForWinning = (steps, times) => {
-          if (times >= numGamesToPlay) {
-              return cy.get('#thisiddoesn\'texist' + (Math.random() * 2000));
-          }
-          if (steps === 0) {
-              cy.get('#renderhere select').first().select('Xanadu');
-              cy.get('#renderhere select').eq(1).select('Arsenic');
-              cy.get('#renderhere select').eq(3).select('Arsenic');
-              cy.get('#renderhere select').eq(2).select('Niagara');
-              cy.get('#renderhere button').click();
-              cy.get('#renderhere ol > li')
-                  .contains('X-A-N-A')
-                  .then(($obj) => {
-                      if ($obj.get(0).innerText.indexOf('B-B-B-B')) {
-                          return testForWinning(0, times + 1);
-                      } else {
-                          cy.get('#renderhere')
-                              .contains('You win!')
-                              .should('not.exist');
-                          return testForWinning(1, times);
-                      }
-                  })
-          } else if (steps === 8) {
-              cy
-                  .get('#renderhere')
-                  .contains(/You fool: my code was [XAFGNC]-[XAFGNC]-[XAFGNC]-[XAFGNC]/);
-              return cy
-                  .get('#renderhere')
-                  .contains(/You fool: my code was X-A-N-A/)
-                  .should('not.exist');
-          } else {
-              cy.get('#renderhere button').click();
-              cy.get('#renderhere ol > li:nth-child(' + (steps + 1) + ')').contains('X-A-N-A');
-              cy.get('#renderhere').contains('You fool: my code was').should('not.exist');
-              return testForWinning(steps + 1, times);
-          }
-      };
-      testForWinning(0, 0)
-  });
-  it('should allow me to win one game in ' + numGamesToPlay, function () {
-      const playSequence = (seq) => {
-          seq.forEach((c, indx) => {
-              cy.get('#renderhere select')
-                  .eq(indx)
-                  .select(c);
-          });
-          return cy.get('#renderhere button').click();
-      };
-      const playGame = (playWithSeq = ['Arsenic', 'Arsenic', 'Niagara', 'Niagara'], playSpace = mastermindInitialSequence, steps = 1) => {
-          if (steps > 8 || playSpace.length < 1 || playWithSeq.length !== 4) {
-              cy.log('I\'ve lost, but that is mathematically impossible');
-              return cy.get('#thisiddoesn\'texist' + (Math.random() * 2000));
-          }
-          playSequence(playWithSeq);
-          cy.get('#renderhere')
-              .then(($obj) => {
-                  const iT = $obj.get(0).innerText;
-                  if ([iT.indexOf('B-B-B-B'), iT.indexOf('You win!')].indexOf(-1) !== -1) {
-                      //I've won!
-                      [0, 1, 2, 3].forEach((i) => {
-                          cy.get('#renderhere select')
-                              .eq(i)
-                              .should('be.disabled')
-                      });
-                      return cy
-                          .get('#renderhere button')
-                          .should('be.disabled');
-                  } else {
-                      //OK, I've failed this one! Now to reduce the possible play space
-                      return cy
-                          .get('#renderhere ol li:last-child')
-                          .contains((() => {
-                              playWithSeq.map((s) => s.slice(0, 1)).join('-')
-                          })())
-                          .then(($obj) => {
-                              const inT = $obj.get(0).innerText;
-                              const ix = inT.search(/[EWB]-[EWB]-[EWB]-[EWB]/);
-                              const iT = iT.slice(ix, ix + 7).split('-');
-                              //Lovely, now I know my result!
-                              const nextPlaySpace = playSpace
-                                  .filter(
-                                      (seq) => {
-                                          const passedColours = [];
-                                          let failed = iT.reduce((failed, resCode, resIndx) => {
-                                              const f = failed || (resCode === "B" && seq[resIndx] !== playWithSeq[resIndx]);
-                                              if (!f) {
-                                                  passedColours.push(playWithSeq[resIndx]);
-                                              }
-                                              return f;
-                                          }, false);
-                                          failed = failed || iT.reduce((failed, resCode, resIndx) => {
-                                              if (resCode === "W") {
-                                                  passedColours.push(playWithSeq[resIndx]);
-                                                  return seq[resIndx] === playWithSeq[resIndx]
-                                              } else {
-                                                  return failed;
-                                              }
-                                          });
-                                          //OK, we can now filer out if they have too many of a colour!
-                                          failed = failed || mastermindColours.every((clr) => {
-                                              return seq.filter((c) => c === clr).length >= passedColours.filter((c) => c === clr).length;
-                                          });
-                                          if (passedColours.length === 4) {
-                                              failed =
-                                                  failed || mastermindColours
-                                                      .filter((c) => passedColours.indexOf(c) === -1)
-                                                      .every((c) => seq.indexOf(c) === -1)
-                                          }
-                                          //Now we eliminate the ones where they are flat out wrong.
-                                          failed = failed || iT.reduce((failed, resCode, resIndx) => {
-                                              if (resCode === "E") {
-                                                  return seq[resIndx] === playWithSeq[resIndx];
-                                              } else {
-                                                  return failed;
-                                              }
-                                          });
-                                          return !failed;
-                                      }
-                                  );
-                              return playGame(nextPlaySpace[0], nextPlaySpace, steps + 1);
-                          });
-                  }
-              })
-      };
-      Cypress._.times(numGamesToPlay, (i) => {
-          cy.get('#button8').click();
-          playGame();
-      });
-  })
-});
+// describe('Button 8', function () {
+//   beforeEach(function () {
+//       cy.get('#button8').click();
+//   });
+//   it('should display the initial game state', function () {
+//       cy.get('#renderhere select');
+//       cy.get('#renderhere select').first().should('not.be.disabled');
+//       cy.get('#renderhere select').should('have.length', 4);
+//       mastermindColours.forEach((colour) => {
+//           cy.get('#renderhere option').contains(colour).should('have.length', 4);
+//       });
+//       cy.get('#renderhere select option:nth-child(6)').should('have.length', 4);
+//       cy.get('#renderhere button').contains('Submit');
+//   });
+//   it('should allow me to submit something and get a read-out', function () {
+//       cy.get('#renderhere select').first().select('Xanadu');
+//       cy.get('#renderhere select').eq(1).select('Arsenic');
+//       cy.get('#renderhere select').eq(3).select('Arsenic');
+//       cy.get('#renderhere select').eq(2).select('Niagara');
+//       cy.get('#renderhere button').click();
+//       cy.log('One play should get me one read out, and no more.');
+//       cy.get('#renderhere ol > li:nth-child(2)').should('not.exist');
+//       cy.get('#renderhere ol > li').contains(/X-A-N-A/);
+//       cy.get('#renderhere ol > li').contains(/[EWB]-[EWB]-[EWB]-[EWB]/);
+//       cy.get('#renderhere select').eq(0).find('option').contains('Xanadu').should('be.selected');
+//       cy.get('#renderhere select').eq(1).find('option').contains('Arsenic').should('be.selected');
+//       cy.get('#renderhere select').eq(2).find('option').contains('Niagara').should('be.selected');
+//       cy.get('#renderhere select').eq(3).find('option').contains('Arsenic').should('be.selected');
+//   });
+//   it('should allow me to lose one game in ' + numGamesToPlay, function () {
+//       const testForWinning = (steps, times) => {
+//           if (times >= numGamesToPlay) {
+//               return cy.get('#thisiddoesn\'texist' + (Math.random() * 2000));
+//           }
+//           if (steps === 0) {
+//               cy.get('#renderhere select').first().select('Xanadu');
+//               cy.get('#renderhere select').eq(1).select('Arsenic');
+//               cy.get('#renderhere select').eq(3).select('Arsenic');
+//               cy.get('#renderhere select').eq(2).select('Niagara');
+//               cy.get('#renderhere button').click();
+//               cy.get('#renderhere ol > li')
+//                   .contains('X-A-N-A')
+//                   .then(($obj) => {
+//                       if ($obj.get(0).innerText.indexOf('B-B-B-B')) {
+//                           return testForWinning(0, times + 1);
+//                       } else {
+//                           cy.get('#renderhere')
+//                               .contains('You win!')
+//                               .should('not.exist');
+//                           return testForWinning(1, times);
+//                       }
+//                   })
+//           } else if (steps === 8) {
+//               cy
+//                   .get('#renderhere')
+//                   .contains(/You fool: my code was [XAFGNC]-[XAFGNC]-[XAFGNC]-[XAFGNC]/);
+//               return cy
+//                   .get('#renderhere')
+//                   .contains(/You fool: my code was X-A-N-A/)
+//                   .should('not.exist');
+//           } else {
+//               cy.get('#renderhere button').click();
+//               cy.get('#renderhere ol > li:nth-child(' + (steps + 1) + ')').contains('X-A-N-A');
+//               cy.get('#renderhere').contains('You fool: my code was').should('not.exist');
+//               return testForWinning(steps + 1, times);
+//           }
+//       };
+//       testForWinning(0, 0)
+//   });
+//   it('should allow me to win one game in ' + numGamesToPlay, function () {
+//       const playSequence = (seq) => {
+//           seq.forEach((c, indx) => {
+//               cy.get('#renderhere select')
+//                   .eq(indx)
+//                   .select(c);
+//           });
+//           return cy.get('#renderhere button').click();
+//       };
+//       const playGame = (playWithSeq = ['Arsenic', 'Arsenic', 'Niagara', 'Niagara'], playSpace = mastermindInitialSequence, steps = 1) => {
+//           if (steps > 8 || playSpace.length < 1 || playWithSeq.length !== 4) {
+//               cy.log('I\'ve lost, but that is mathematically impossible');
+//               return cy.get('#thisiddoesn\'texist' + (Math.random() * 2000));
+//           }
+//           playSequence(playWithSeq);
+//           cy.get('#renderhere')
+//               .then(($obj) => {
+//                   const iT = $obj.get(0).innerText;
+//                   if ([iT.indexOf('B-B-B-B'), iT.indexOf('You win!')].indexOf(-1) !== -1) {
+//                       //I've won!
+//                       [0, 1, 2, 3].forEach((i) => {
+//                           cy.get('#renderhere select')
+//                               .eq(i)
+//                               .should('be.disabled')
+//                       });
+//                       return cy
+//                           .get('#renderhere button')
+//                           .should('be.disabled');
+//                   } else {
+//                       //OK, I've failed this one! Now to reduce the possible play space
+//                       return cy
+//                           .get('#renderhere ol li:last-child')
+//                           .contains((() => {
+//                               playWithSeq.map((s) => s.slice(0, 1)).join('-')
+//                           })())
+//                           .then(($obj) => {
+//                               const inT = $obj.get(0).innerText;
+//                               const ix = inT.search(/[EWB]-[EWB]-[EWB]-[EWB]/);
+//                               const iT = iT.slice(ix, ix + 7).split('-');
+//                               //Lovely, now I know my result!
+//                               const nextPlaySpace = playSpace
+//                                   .filter(
+//                                       (seq) => {
+//                                           const passedColours = [];
+//                                           let failed = iT.reduce((failed, resCode, resIndx) => {
+//                                               const f = failed || (resCode === "B" && seq[resIndx] !== playWithSeq[resIndx]);
+//                                               if (!f) {
+//                                                   passedColours.push(playWithSeq[resIndx]);
+//                                               }
+//                                               return f;
+//                                           }, false);
+//                                           failed = failed || iT.reduce((failed, resCode, resIndx) => {
+//                                               if (resCode === "W") {
+//                                                   passedColours.push(playWithSeq[resIndx]);
+//                                                   return seq[resIndx] === playWithSeq[resIndx]
+//                                               } else {
+//                                                   return failed;
+//                                               }
+//                                           });
+//                                           //OK, we can now filer out if they have too many of a colour!
+//                                           failed = failed || mastermindColours.every((clr) => {
+//                                               return seq.filter((c) => c === clr).length >= passedColours.filter((c) => c === clr).length;
+//                                           });
+//                                           if (passedColours.length === 4) {
+//                                               failed =
+//                                                   failed || mastermindColours
+//                                                       .filter((c) => passedColours.indexOf(c) === -1)
+//                                                       .every((c) => seq.indexOf(c) === -1)
+//                                           }
+//                                           //Now we eliminate the ones where they are flat out wrong.
+//                                           failed = failed || iT.reduce((failed, resCode, resIndx) => {
+//                                               if (resCode === "E") {
+//                                                   return seq[resIndx] === playWithSeq[resIndx];
+//                                               } else {
+//                                                   return failed;
+//                                               }
+//                                           });
+//                                           return !failed;
+//                                       }
+//                                   );
+//                               return playGame(nextPlaySpace[0], nextPlaySpace, steps + 1);
+//                           });
+//                   }
+//               })
+//       };
+//       Cypress._.times(numGamesToPlay, (i) => {
+//           cy.get('#button8').click();
+//           playGame();
+//       });
+//   })
+// });
 
 describe('Button 4', function () {
   beforeEach(function () {
@@ -208,12 +208,12 @@ describe('Button 4', function () {
           cy.log('Clicking ' + seq[0]);
           const selector = '#renderhere table tr:nth-child(' + (Math.ceil((seq[0]) / 3)) + ') td:nth-child(' + (((seq[0] - 1) % 3) + 1) + ')'
           cy.get(selector)
-              .click({
-                  force: true
-              });
-          cy.get(selector)
-              .contains(crosses ? 'X' : 'O');
-          return playSequence(seq.slice(1), !crosses, winner);
+          .click({
+              force: true
+            });
+            cy.get(selector)
+            .contains(crosses ? 'X' : 'O');
+          return playSequence(seq.slice(1), !crosses);
       }
   };
   it('Should render a table and instructions', function () {
