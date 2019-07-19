@@ -286,9 +286,9 @@ addEventToButton(6, function(event) {
  * Button 8: Mastermind
  */
 addEventToButton(8, function(event) {
-	document.getElementById("renderhere").innerHTML = "";
+	let container = document.getElementById("renderhere");
+	container.innerHTML = "";
 
-	const container = document.createElement('div');
 	const colors = [
 		'Xanadu',
 		'Arsenic',
@@ -322,28 +322,49 @@ addEventToButton(8, function(event) {
 	let guessList = document.createElement('ol');
 	guessList.type = 'i';
 
+	let turnsRemainingText = document.createElement('p');
+	turnsRemainingText.innerHTML = 'Turns remaining: 8';
+
 	let guessBtn = document.createElement('button');
 	guessBtn.innerHTML = 'Submit Guess';
 	guessBtn.classList.add('btn', 'btn-primary', 'd-block','mt-3', 'mb-3');
 
 	container.appendChild(guessBtn);
 	container.appendChild(guessList);
+	container.appendChild(turnsRemainingText);
 
 	guessBtn.addEventListener('click', function(e) {
 		turns++;
+		turnsRemainingText.innerHTML = 'Turns remaining: ' + (8 - turns);
 
 		let guessArr = [];
 		let resultArr = [];
 
 		for (let j = 0; j < 4; j++) {
-			let selectVal = document.querySelector('.select-' + (j+1)).value[0];
+			let selectVal = document.querySelector('.select-' + (j + 1)).value[0];
 			let result = (seq[j] === selectVal) 
 			? 'B'
-			: (seq.includes(selectVal) ? 'W' : 'E')
+			: seq[j] + '/' + selectVal;
 
 			guessArr.push(selectVal);
 			resultArr.push(result);
 		}
+
+		// Get an array of unresolved indexes to check in the next step
+		// let unresolvedIndexes = 
+
+		resultArr.forEach((result, i) => {
+			if (result !== 'B') {
+				let answer = result[0];
+				let guess = result[2];
+
+				// Does guess exist in one of the other columns? (that isn't a B)
+				// if so, result is W, otherwise it's an E.
+				
+			}
+		})
+
+
 
 		let li = document.createElement('li');
 		let guessStr = guessArr.join('-');
@@ -367,12 +388,10 @@ addEventToButton(8, function(event) {
 
 			if (!win) {
 				let lostMsg = document.createElement('p');
-				lostMsg.innerHTML = 'You lose.';
+				lostMsg.innerHTML = 'You fool: my code was ' + seq.join('-');
 				container.appendChild(lostMsg);
 			}
 		}
 	})
-
-	document.getElementById("renderhere").append(container);
 
 });
