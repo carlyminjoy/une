@@ -93,7 +93,7 @@ addEventToButton(1, function(event) {
 /**
  * Remove the number of the button you are modifying from here whenever you add an event!
  */
-[5, 6, 7, 8, 9].forEach(btnNumber => {
+[6, 7, 9].forEach(btnNumber => {
   addEventToButton(btnNumber, function(event) {
     document.getElementById("renderhere").innerText =
       "You pressed button " + btnNumber + ", but it doesn't do anything yet!";

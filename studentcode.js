@@ -129,21 +129,15 @@ addEventToButton(3, function(event) {
 
 });
 
-  
 /**
- * Button 3: Todo
+ * Button 4: Noughts and crosses
  */
 addEventToButton(4, function(event) {
 	document.getElementById("renderhere").innerHTML = "";
 
 	let currentPlayer = 'X';
 	let winner = false;
-
-	let gridArray = [
-		['', '', ''],
-		['', '', ''],
-		['', '', '']
-	];
+	let moves = 0;
 
 	let wins = [
 		['x0y0', 'x1y0', 'x2y0'],
@@ -173,9 +167,9 @@ addEventToButton(4, function(event) {
 
 			col.addEventListener('click', function(e) {
 				if (!winner && !['X', 'O'].includes(col.innerHTML)) {
+					moves++;
 					col.innerHTML = currentPlayer;
 					col.classList.add;
-					gridArray[x][y] = currentPlayer;
 					
 					wins.forEach(function(combination) {
 						let count = 0;
@@ -183,9 +177,8 @@ addEventToButton(4, function(event) {
 						for (let i = 0; i < 3; i++) {
 							let cell = document.getElementById(combination[i]);
 
-							if (cell.innerHTML == currentPlayer) {
-								count++;
-							}
+							if (cell.innerHTML != currentPlayer) { break; }
+							count++;
 
 							if (count == 3) { 
 								winner = currentPlayer === 'X' ? "Crosses" : "Noughts";
@@ -194,7 +187,10 @@ addEventToButton(4, function(event) {
 					})
 
 					if (winner) {
-						message.innerHTML = winner + ' wins!';
+						message.innerHTML =  (winner + ' wins!');
+					} else if (moves === 9) {
+						message.innerHTML = 'Draw!';
+						winner = true;
 					} else if (currentPlayer === 'X') {
 						currentPlayer = 'O';
 						message.innerHTML = 'Noughts turn!';
@@ -217,4 +213,166 @@ addEventToButton(4, function(event) {
 	container.appendChild(grid);
 
 	document.getElementById("renderhere").append(container);
+});
+
+/**
+ * Button 5: Canvas
+ */
+addEventToButton(5, function(event) {
+	document.getElementById("renderhere").innerHTML = "";
+
+	const canvas = document.createElement('canvas');
+	canvas.style.width = '300px';
+	canvas.style.height = '300px';
+	canvas.style.border = '3px solid #555'
+	canvas.style.cursor = 'crosshair';
+	const ctx = canvas.getContext('2d');
+	ctx.lineWidth = 3;
+
+	let draw = {
+		drawing: false,
+		start: function(e) {
+			ctx.beginPath();
+			let x = e.pageX - canvas.offsetLeft;
+			let y = e.pageY - (canvas.offsetTop);
+			ctx.moveTo(x, y);
+			this.drawing = true;
+		},
+		move: function(e) {
+			if (this.drawing) {
+				let x = e.pageX - canvas.offsetLeft;
+				let y = e.pageY - (canvas.offsetTop);
+				ctx.lineTo(x, y);
+				ctx.strokeStyle = "#000";
+				ctx.lineWidth = 5;
+				ctx.stroke();
+			}
+		},
+		end: function(e) {
+			this.drawing = false;
+		}
+	};
+	
+	canvas.addEventListener('mousedown', draw.start);
+	canvas.addEventListener('mousemove', draw.move);
+	canvas.addEventListener('mouseup', draw.end);
+
+	document.getElementById("renderhere").append(canvas);
+});
+
+/**
+ * Button 6: SVG
+ */
+addEventToButton(6, function(event) {
+	document.getElementById("renderhere").innerHTML = "";
+
+	const svg = document.createElement('svg');
+	svg.style.width = '300px';
+	svg.style.height = '300px';
+	svg.style.border = '3px solid #555';
+
+	svg.classList.add('graph');
+	svg.innerHTML = `
+	<g class="grid x-grid">
+		<line x1="90" x2="90" y1="5" y2="371"></line>
+	</g>
+	`
+
+	document.getElementById("renderhere").append(svg);
+
+});
+
+/**
+ * Button 8: Mastermind
+ */
+addEventToButton(8, function(event) {
+	document.getElementById("renderhere").innerHTML = "";
+
+	const container = document.createElement('div');
+	const colors = [
+		'Xanadu',
+		'Arsenic',
+		'Fallow',
+		'Gamboge',
+		'Niagara',
+		'Cerise'
+	];
+
+	let seq = [];
+	let turns = 0;
+	let win = false;
+	
+	for (let i = 0; i < 4; i++) {
+		seq.push(colors[Math.floor(Math.random()*colors.length)][0]);
+
+		let select = document.createElement('select');
+		select.classList.add('select-' + (i + 1));
+
+		colors.forEach(function(color) {
+			let option = document.createElement('option');
+			option.innerHTML = color;
+			option.value = color;
+
+			select.appendChild(option);
+		})
+
+		container.appendChild(select);
+	}
+
+	let guessList = document.createElement('ol');
+	guessList.type = 'i';
+
+	let guessBtn = document.createElement('button');
+	guessBtn.innerHTML = 'Submit Guess';
+	guessBtn.classList.add('btn', 'btn-primary', 'd-block','mt-3', 'mb-3');
+
+	container.appendChild(guessBtn);
+	container.appendChild(guessList);
+
+	guessBtn.addEventListener('click', function(e) {
+		turns++;
+
+		let guessArr = [];
+		let resultArr = [];
+
+		for (let j = 0; j < 4; j++) {
+			let selectVal = document.querySelector('.select-' + (j+1)).value[0];
+			let result = (seq[j] === selectVal) 
+			? 'B'
+			: (seq.includes(selectVal) ? 'W' : 'E')
+
+			guessArr.push(selectVal);
+			resultArr.push(result);
+		}
+
+		let li = document.createElement('li');
+		let guessStr = guessArr.join('-');
+		let resultStr = resultArr.join('-')
+		li.innerHTML = 'You guessed ' + guessStr + ' (Result: ' + resultStr + ')';
+		guessList.appendChild(li);
+
+		if (resultStr == 'B-B-B-B') {
+			win = true;
+			let winMsg = document.createElement('p');
+			winMsg.innerHTML = 'You win!';
+			container.appendChild(winMsg);
+		}
+		
+		if (win || turns == 8) {
+			guessBtn.disabled = true;
+			let selects = this.querySelectorAll('select');
+			selects.forEach(function(sel) {
+				sel.disabled = true;
+			})
+
+			if (!win) {
+				let lostMsg = document.createElement('p');
+				lostMsg.innerHTML = 'You lose.';
+				container.appendChild(lostMsg);
+			}
+		}
+	})
+
+	document.getElementById("renderhere").append(container);
+
 });
