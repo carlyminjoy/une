@@ -15,8 +15,18 @@
       crossorigin="anonymous"
     />
     <title>COSC360 A1</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+    <style>
+      svg {
+        border: 2px solid #555;
+      }
+      .line {
+        fill: none;
+        border: none;
+        stroke: red;
+        stroke-width: 5;
+        stroke-linecap: round;
+      }
+    </style>
   </head>
 
   <body>
@@ -47,6 +57,8 @@
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
     <script src="provided.js"></script>
     <script>
       grocery_shop = {

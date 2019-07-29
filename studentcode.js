@@ -267,16 +267,32 @@ addEventToButton(5, function(event) {
  */
 addEventToButton(6, function(event) {
   document.getElementById("renderhere").innerHTML = "";
-  let x = 0.5;
 
-  var data = d3.range(-1, 1).map(function(v) {
-    return {
-      x: v,
-      y: Math.sin(x)
-    };
-  });
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("height", "300");
+  svg.setAttribute("width", "300");
 
-  document.getElementById("renderhere").append(svg);
+  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.classList.add("line");
+  path.setAttribute("d", "M0,150 C150,600 150,-300 300,150");
+  svg.appendChild(path);
+
+  // No amount of research helped me make sense of 6 and 7!
+  document.getElementById("renderhere").appendChild(svg);
+});
+
+/**
+ * Button 7: SVG
+ */
+addEventToButton(7, function(event) {
+  document.getElementById("renderhere").innerHTML = "";
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("height", "300");
+  svg.setAttribute("width", "300");
+
+  // No idea!
+  document.getElementById("renderhere").appendChild(svg);
 });
 
 /**
@@ -440,6 +456,7 @@ addEventToButton(9, function(event) {
 
       let qtyInput = document.createElement("input");
       qtyInput.type = "number";
+      qtyInput.setAttribute("placeholder", "Enter Quantity");
 
       let button = document.createElement("button");
       button.innerHTML = "Add To Cart";
