@@ -141,11 +141,12 @@ addEventToButton(4, function(event) {
   let moves = 0;
 
   let wins = [
+	["x0y0", "x0y1", "x0y2"],
     ["x0y0", "x1y0", "x2y0"],
-    ["x0y1", "x1y1", "x2y1"],
-    ["x0y2", "x1y2", "x2y2"],
     ["x0y0", "x1y1", "x2y2"],
+	["x0y1", "x1y1", "x2y1"],
     ["x0y2", "x1y1", "x2y0"],
+    ["x0y2", "x1y2", "x2y2"],
     ["x1y0", "x1y1", "x1y2"],
     ["x2y0", "x2y1", "x2y2"]
   ];
