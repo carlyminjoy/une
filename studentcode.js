@@ -266,33 +266,95 @@ addEventToButton(5, function(event) {
  * Button 6: SVG
  */
 addEventToButton(6, function(event) {
-  document.getElementById("renderhere").innerHTML = "";
+	document.getElementById("renderhere").innerHTML = "";
 
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("height", "300");
-  svg.setAttribute("width", "300");
+	let container = document.createElement('div');
+	container.innerHTML = `
+		<svg id='graph' width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+			<path id='path' fill="transparent" stroke='#555'stroke-width='3px'/>
+		</svg>`
+	
+	document.getElementById("renderhere").appendChild(container);
 
-  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.classList.add("line");
-  path.setAttribute("d", "M0,150 C150,600 150,-300 300,150");
-  svg.appendChild(path);
+	let path = d3.select('#path')
 
-  // No amount of research helped me make sense of 6 and 7!
-  document.getElementById("renderhere").appendChild(svg);
+	var rangeY = d3.scaleLinear()
+		.domain([-1, 1])
+		.range( [0, 300]);
+
+	let xMax = (2 * Math.PI)
+
+	var rangeX = d3.scaleLinear()
+		.range([0, xMax])
+		.domain([0, 300]);
+
+	let d = 'M 0 150';
+
+	for (let x = 0; x <= 300; x++) {
+		let y = Math.sin(rangeX(x))
+		
+		d += (' L ' + parseInt(x) + ' ' + parseInt(Math.round(rangeY(y))))
+	}
+
+	path.attr('fill', 'transparent').attr('stroke', '#555').attr('stroke-width', '3px').attr('d', d);
+
 });
 
 /**
  * Button 7: SVG
  */
 addEventToButton(7, function(event) {
-  document.getElementById("renderhere").innerHTML = "";
+	document.getElementById("renderhere").innerHTML = "";
 
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("height", "300");
-  svg.setAttribute("width", "300");
+	let container = document.createElement('div');
+	container.innerHTML = `
+	<svg id='graph2' width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+		<path id='path2' fill="transparent" stroke='#555'stroke-width='3px'/>
+	</svg>
 
-  // No idea!
-  document.getElementById("renderhere").appendChild(svg);
+	<br><br>
+
+	<label for='k-input'>Enter a number for <strong>k</strong>:</label>
+	<input class='form-control' type='number' id='k-input'></input>`
+
+	document.getElementById("renderhere").appendChild(container);
+
+	let path2 = d3.select('#path2')
+
+	var rangeY = d3.scaleLinear()
+		.domain([-1, 1])
+		.range( [0, 300]);
+
+	let x2Max = (2 * Math.PI)
+
+	var rangeX = d3.scaleLinear()
+		.range([0, x2Max])
+		.domain( [0, 300]);
+
+	let d2 = 'M 0 150';
+	let k = document.getElementById('k-input').value;
+	document.getElementById('k-input').value = 5;
+	let t = (new Date()).getTime() / 1000
+
+	path2.attr('fill', 'transparent').attr('stroke', '#555').attr('stroke-width', '3px');
+
+	setInterval(function() {
+		t = (new Date()).getTime() / 1000;
+		d2 = 'M 0 150';
+		k = document.getElementById('k-input').value;
+
+		for (let x = 1; x <= 300; x++) {
+			let y = Math.sin(k * rangeX(x) + t)
+			
+			d2 += (' L ' + parseInt(x) + ' ' + parseInt(Math.round(rangeY(y))))
+		}
+
+		path2.attr('d', d2);
+
+	}, 200)
+
+	// Sorry for the grossest code ever written
+
 });
 
 /**
